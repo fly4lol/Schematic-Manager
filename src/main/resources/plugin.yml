@@ -1,0 +1,7 @@
+name: Schematic
+version: ${project.build.version}
+description: schematic Manager for GearForge powered by MyPlayPlanet
+website: fly4lol.de
+author: fly4lol
+main: de.fly4lol.schematic.Main
+depend: [WorldEdit]
