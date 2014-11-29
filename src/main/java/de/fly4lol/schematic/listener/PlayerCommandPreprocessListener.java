@@ -45,31 +45,18 @@ public class PlayerCommandPreprocessListener implements Listener{
 	
 	private void load(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
-		event.setCancelled(true);
 		String message = event.getMessage();
-		String[] args = message.split(" ");	
-		if(player.hasPermission("schematic.load.other")){
-			event.setCancelled(true);
-		} else if(player.hasPermission("schematic.load.own")){
-			if(args.length == 3){
-				String schem = player.getName() + "/" + args[2];
-				
-				player.performCommand("/schematic load " + schem);
-			} else if(args.length == 4 ){
-				if(player.hasPermission("schematic.load.path." + args[2])){
-					String schem = player.getName() + "/" + args[2] + "/" + args[3];
-					
-					player.performCommand("/schematic load " + schem);
-				}
-			} else {
-				player.sendMessage("Nutze //schematic load <schematic>");
-			}
-			
+		String[] args = message.split(" ");
+		
+		String location = "";
+		if(player.hasPermission("schematic.load.own") && args.length == 3){
+			location = player.getName()+"/"+args[2];
+		} else if (args.length == 4 && player.hasPermission("schematic.load.path." + args[2])) {
+			location = player.getName()+"/"+args[2]+"/"+args[3];
 		} else {
-			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
-		
-		
+			player.sendMessage("Nutze //schematic load [schematic]");
 		}
+		event.setMessage("//schem load "+location);
 	}
 	
 	private void save(PlayerCommandPreprocessEvent event){
@@ -117,7 +104,7 @@ public class PlayerCommandPreprocessListener implements Listener{
         for (File file : files)
         {
             if (file.getName().toLowerCase().contains("schematic")) {
-               player.sendMessage(ChatColor.BLUE.toString()+file.getName());
+               player.sendMessage(ChatColor.BLUE.toString()+file.getName().split(".")[0]);
             }
         }
 	}
