@@ -50,7 +50,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 		
 		String location = "";
 		if (args.length == 4 && player.hasPermission("schematic.load.path." + args[2])) {
-			location = player.getName()+"/"+args[2]+"/"+args[3];
+			location = args[2]+"/"+args[3];
 		} else if(player.hasPermission("schematic.load.own") && args.length == 3){
 			location = player.getName()+"/"+args[2];
 		} else {
