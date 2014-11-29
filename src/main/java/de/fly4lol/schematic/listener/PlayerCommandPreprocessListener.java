@@ -52,7 +52,11 @@ public class PlayerCommandPreprocessListener implements Listener{
 		if (args.length == 4 && player.hasPermission("schematic.load.path." + args[2])) {
 			location = args[2]+"/"+args[3];
 		} else if(player.hasPermission("schematic.load.own") && args.length == 3){
-			location = player.getName()+"/"+args[2];
+			if (player.hasPermission("schematic.load.other")) {
+				location = args[2];
+			} else {
+				location = player.getName()+"/"+args[2];
+			}
 		} else {
 			player.sendMessage("Nutze //schematic load [schematic]");
 		}
@@ -79,11 +83,11 @@ public class PlayerCommandPreprocessListener implements Listener{
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String[] args = message.split(" ");	
-		
-		WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-		LocalConfiguration config = we.getWorldEdit().getConfiguration();
-		File saveDir = config.getWorkingDirectory();
-		if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
+		WorldEdit we = ((WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit")).getWorldEdit();
+        LocalConfiguration config = we.getConfiguration();
+	        
+        File saveDir = we.getWorkingDirectoryFile(config.saveDir);
+        if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
 			saveDir = new File(config.saveDir, args[2]);
 		} else if(player.hasPermission("schematic.list.own") && args.length == 2){	
 			saveDir = new File(saveDir, player.getName());
@@ -102,9 +106,11 @@ public class PlayerCommandPreprocessListener implements Listener{
         player.sendMessage(ChatColor.AQUA+"=== Schematics ===");
         for (File file : files)
         {
-            if (file.getName().toLowerCase().contains("schematic")) {
-               player.sendMessage(ChatColor.BLUE.toString()+file.getName());
+        	ChatColor color = ChatColor.BLUE;
+            if (file.isDirectory()) {
+            	color = ChatColor.YELLOW;
             }
+            player.sendMessage(color+file.getName());
         }
 	}
 }
