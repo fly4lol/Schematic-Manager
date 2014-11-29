@@ -95,13 +95,13 @@ public class PlayerCommandPreprocessListener implements Listener{
 			String message = event.getMessage();
 			String[] args = message.split(" ");	
 		if(player.hasPermission("schematic.list.own")){
-			if(args.length == 3){
+			if(args.length == 2){
 				WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 				LocalConfiguration config = we.getWorldEdit().getConfiguration();
 				File saveDir = new File(config.saveDir, player.getName());
 					
 				this.listSchematics( saveDir, player);
-			} else if(args.length == 4){
+			} else if(args.length == 3){
 				if(player.hasPermission("schematic.list.path." + args[2])){
 					WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 					LocalConfiguration config = we.getWorldEdit().getConfiguration();
