@@ -92,33 +92,19 @@ public class PlayerCommandPreprocessListener implements Listener{
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String[] args = message.split(" ");	
-		if(!player.hasPermission("schematic.list.other")){
-			event.setCancelled(true);
 		
-		} else if(player.hasPermission("schematic.list.own")){
-			if(args.length == 2){
-				WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-				LocalConfiguration config = we.getWorldEdit().getConfiguration();
-				File saveDir = new File(config.saveDir, player.getName());
-					
-				this.listSchematics( saveDir, player);
-			} else if(args.length == 3){
-				if(player.hasPermission("schematic.list.path." + args[2])){
-					WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-					LocalConfiguration config = we.getWorldEdit().getConfiguration();
-					File saveDir = new File(config.saveDir, args[2]);
-					
-					this.listSchematics( saveDir, player);
-				}
-			} else {
-				player.sendMessage("Nutze //schematic list");
-			}
-	
-		
+		WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+		LocalConfiguration config = we.getWorldEdit().getConfiguration();
+		File saveDir = config.getWorkingDirectory();
+				
+		if(player.hasPermission("schematic.list.own") && args.length == 2){	
+			saveDir = new File(saveDir, player.getName());
+		} else if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
+			saveDir = new File(config.saveDir, args[2]);
 		} else {
-			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
+			player.sendMessage("Nutze //schematic list");
 		}
-		
+		this.listSchematics( saveDir, player);
 	}
 	
 	private void listSchematics(File path, Player player){
