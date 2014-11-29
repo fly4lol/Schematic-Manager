@@ -47,27 +47,43 @@ public class PlayerCommandPreprocessListener implements Listener{
 		Player player = event.getPlayer();
 		if(!player.hasPermission("schematic.load.other")){
 			event.setCancelled(true);
-			
 			String message = event.getMessage();
 			String[] args = message.split(" ");	
+		if(player.hasPermission("schematic.load.own")){
+			if(args.length == 3){
+				String schem = player.getName() + "/" + args[2];
+				
+				player.performCommand("/schematic load " + schem);
+			} else if(args.length == 4 ){
+				if(player.hasPermission("schematic.load.path." + args[2])){
+					String schem = player.getName() + "/" + args[2] + "/" + args[3];
+					
+					player.performCommand("/schematic load " + schem);
+				}
+			} else {
+				player.sendMessage("Nutze //schematic load <schematic>");
+			}
 			
-			String schem = player.getName() + "/" + args[2];
-			
-			player.performCommand("/schematic load " + schem);
+		} else {
+			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
+		}
+		
 		}
 	}
 	
 	private void save(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
 		if(!player.hasPermission("schematic.save.other")){
-			event.setCancelled(true);
-			
-			String message = event.getMessage();
-			String[] args = message.split(" ");	
-			
-			String schem = player.getName() + "/" + args[2];
-			
-			player.performCommand("/schematic save " + schem);	
+			if(player.hasPermission("schematic.save.own")){
+				event.setCancelled(true);
+				
+				String message = event.getMessage();
+				String[] args = message.split(" ");	
+				
+				String schem = player.getName() + "/" + args[2];
+				
+				player.performCommand("/schematic save " + schem);	
+			}
 		}
 	}
 	
@@ -78,25 +94,43 @@ public class PlayerCommandPreprocessListener implements Listener{
 			
 			String message = event.getMessage();
 			String[] args = message.split(" ");	
-			
-			WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-			try {
-				we.getSession( player ).setTool(258, new DistanceWand());
-			} catch (InvalidToolBindException e) {
-				Bukkit.broadcastMessage("ist kakkööööö");
-				e.printStackTrace();
+		if(player.hasPermission("schematic.list.own")){
+			if(args.length == 3){
+				WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+				LocalConfiguration config = we.getWorldEdit().getConfiguration();
+				File saveDir = new File(config.saveDir, player.getName());
+					
+				this.listSchematics( saveDir, player);
+			} else if(args.length == 4){
+				if(player.hasPermission("schematic.list.path." + args[2])){
+					WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
+					LocalConfiguration config = we.getWorldEdit().getConfiguration();
+					File saveDir = new File(config.saveDir, player.getName() + args[2]);
+					
+					this.listSchematics( saveDir, player);
+				}
+			} else {
+				player.sendMessage("Nutze //schematic list");
 			}
-			LocalConfiguration config = we.getWorldEdit().getConfiguration();
-			File saveDir = new File(config.saveDir, player.getName());
-			saveDir.mkdirs();
-			File[] files = saveDir.listFiles();
-	        event.getPlayer().sendMessage(ChatColor.AQUA+"=== Schematics ===");
-	        for (File file : files)
-	        {
-	            if (file.getName().toLowerCase().contains("schematic") && !file.isDirectory()) {
-	                event.getPlayer().sendMessage(ChatColor.BLUE.toString()+file.getName());
-	            }
-	        }
+	
+		
+		} else {
+			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
 		}
+		}
+	}
+	
+	private void listSchematics(File path, Player player){
+		File saveDir = null;
+		saveDir = path;
+		saveDir.mkdirs();
+		File[] files = saveDir.listFiles();
+        player.sendMessage(ChatColor.AQUA+"=== Schematics ===");
+        for (File file : files)
+        {
+            if (file.getName().toLowerCase().contains("schematic") && !file.isDirectory()) {
+               player.sendMessage(ChatColor.BLUE.toString()+file.getName());
+            }
+        }
 	}
 }
