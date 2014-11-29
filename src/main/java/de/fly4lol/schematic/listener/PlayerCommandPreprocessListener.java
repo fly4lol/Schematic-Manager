@@ -80,6 +80,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 	}
 	
 	private void list(PlayerCommandPreprocessEvent event){
+		event.setCancelled(true);
 		Player player = event.getPlayer();
 		String message = event.getMessage();
 		String[] args = message.split(" ");	
@@ -87,8 +88,17 @@ public class PlayerCommandPreprocessListener implements Listener{
         LocalConfiguration config = we.getConfiguration();
 	        
         File saveDir = we.getWorkingDirectoryFile(config.saveDir);
-        if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
-			saveDir = new File(config.saveDir, args[2]);
+        if (args.length == 3) {
+        	if (player.hasPermission("schematic.list.path." + args[2])) {
+        		saveDir = new File(config.saveDir, args[2]);
+        	} else {
+        		player.sendMessage("Du hast keine Rechte dazu, diesen Ordner zu aufzulisten.");
+        		return;
+        	}
+            if (!saveDir.exists()) {
+            	player.sendMessage("Diesen Ordner gibt es nicht.");
+            	return;
+            }
 		} else if(player.hasPermission("schematic.list.own") && args.length == 2){
 			if (!player.hasPermission("schematic.load.other")) {
 				saveDir = new File(saveDir, player.getName());
@@ -97,12 +107,9 @@ public class PlayerCommandPreprocessListener implements Listener{
 			player.sendMessage("Nutze //schematic list");
 		}
 		this.listSchematics( saveDir, player);
-		event.setCancelled(true);
 	}
 	
-	private void listSchematics(File path, Player player){
-		File saveDir = null;
-		saveDir = path;
+	private void listSchematics(File saveDir, Player player){
 		saveDir.mkdirs();
 		File[] files = saveDir.listFiles();
         player.sendMessage(ChatColor.AQUA+"=== Schematics ===");
