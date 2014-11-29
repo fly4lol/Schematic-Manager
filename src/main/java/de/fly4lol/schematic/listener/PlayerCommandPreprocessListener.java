@@ -89,8 +89,10 @@ public class PlayerCommandPreprocessListener implements Listener{
         File saveDir = we.getWorkingDirectoryFile(config.saveDir);
         if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
 			saveDir = new File(config.saveDir, args[2]);
-		} else if(player.hasPermission("schematic.list.own") && args.length == 2){	
-			saveDir = new File(saveDir, player.getName());
+		} else if(player.hasPermission("schematic.list.own") && args.length == 2){
+			if (!player.hasPermission("schematic.load.other")) {
+				saveDir = new File(saveDir, player.getName());
+			}
 		} else {
 			player.sendMessage("Nutze //schematic list");
 		}
