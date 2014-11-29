@@ -105,6 +105,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 			player.sendMessage("Nutze //schematic list");
 		}
 		this.listSchematics( saveDir, player);
+		event.setCancelled(true);
 	}
 	
 	private void listSchematics(File path, Player player){
