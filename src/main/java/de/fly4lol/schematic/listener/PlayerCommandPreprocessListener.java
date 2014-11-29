@@ -49,10 +49,10 @@ public class PlayerCommandPreprocessListener implements Listener{
 		String[] args = message.split(" ");
 		
 		String location = "";
-		if(player.hasPermission("schematic.load.own") && args.length == 3){
-			location = player.getName()+"/"+args[2];
-		} else if (args.length == 4 && player.hasPermission("schematic.load.path." + args[2])) {
+		if (args.length == 4 && player.hasPermission("schematic.load.path." + args[2])) {
 			location = player.getName()+"/"+args[2]+"/"+args[3];
+		} else if(player.hasPermission("schematic.load.own") && args.length == 3){
+			location = player.getName()+"/"+args[2];
 		} else {
 			player.sendMessage("Nutze //schematic load [schematic]");
 		}
@@ -83,11 +83,10 @@ public class PlayerCommandPreprocessListener implements Listener{
 		WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		LocalConfiguration config = we.getWorldEdit().getConfiguration();
 		File saveDir = config.getWorkingDirectory();
-				
-		if(player.hasPermission("schematic.list.own") && args.length == 2){	
-			saveDir = new File(saveDir, player.getName());
-		} else if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
+		if (args.length == 3 && player.hasPermission("schematic.list.path." + args[2])) {
 			saveDir = new File(config.saveDir, args[2]);
+		} else if(player.hasPermission("schematic.list.own") && args.length == 2){	
+			saveDir = new File(saveDir, player.getName());
 		} else {
 			player.sendMessage("Nutze //schematic list");
 		}
@@ -104,7 +103,7 @@ public class PlayerCommandPreprocessListener implements Listener{
         for (File file : files)
         {
             if (file.getName().toLowerCase().contains("schematic")) {
-               player.sendMessage(ChatColor.BLUE.toString()+file.getName().split(".")[0]);
+               player.sendMessage(ChatColor.BLUE.toString()+file.getName());
             }
         }
 	}
