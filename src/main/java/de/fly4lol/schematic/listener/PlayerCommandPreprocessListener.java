@@ -92,7 +92,7 @@ public class PlayerCommandPreprocessListener implements Listener{
         	if (player.hasPermission("schematic.list.path." + args[2])) {
         		saveDir = new File(config.saveDir, args[2]);
         	} else {
-        		player.sendMessage("Du hast keine Rechte dazu, diesen Ordner zu aufzulisten.");
+        		player.sendMessage("Du hast keine Rechte dazu, diesen Ordner aufzulisten.");
         		return;
         	}
             if (!saveDir.exists()) {
