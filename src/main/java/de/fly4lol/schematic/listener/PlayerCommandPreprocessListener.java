@@ -45,11 +45,12 @@ public class PlayerCommandPreprocessListener implements Listener{
 	
 	private void load(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
-		if(!player.hasPermission("schematic.load.other")){
+		event.setCancelled(true);
+		String message = event.getMessage();
+		String[] args = message.split(" ");	
+		if(player.hasPermission("schematic.load.other")){
 			event.setCancelled(true);
-			String message = event.getMessage();
-			String[] args = message.split(" ");	
-		if(player.hasPermission("schematic.load.own")){
+		} else if(player.hasPermission("schematic.load.own")){
 			if(args.length == 3){
 				String schem = player.getName() + "/" + args[2];
 				
@@ -66,7 +67,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 			
 		} else {
 			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
-		}
+		
 		
 		}
 	}
@@ -89,12 +90,12 @@ public class PlayerCommandPreprocessListener implements Listener{
 	
 	private void list(PlayerCommandPreprocessEvent event){
 		Player player = event.getPlayer();
+		String message = event.getMessage();
+		String[] args = message.split(" ");	
 		if(!player.hasPermission("schematic.list.other")){
 			event.setCancelled(true);
-			
-			String message = event.getMessage();
-			String[] args = message.split(" ");	
-		if(player.hasPermission("schematic.list.own")){
+		
+		} else if(player.hasPermission("schematic.list.own")){
 			if(args.length == 2){
 				WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 				LocalConfiguration config = we.getWorldEdit().getConfiguration();
@@ -105,7 +106,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 				if(player.hasPermission("schematic.list.path." + args[2])){
 					WorldEditPlugin we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 					LocalConfiguration config = we.getWorldEdit().getConfiguration();
-					File saveDir = new File(config.saveDir, player.getName() + args[2]);
+					File saveDir = new File(config.saveDir, args[2]);
 					
 					this.listSchematics( saveDir, player);
 				}
@@ -117,7 +118,7 @@ public class PlayerCommandPreprocessListener implements Listener{
 		} else {
 			player.sendMessage("§4Du Hast keine Berechtigung um dies zu tuhen!");
 		}
-		}
+		
 	}
 	
 	private void listSchematics(File path, Player player){
@@ -128,7 +129,7 @@ public class PlayerCommandPreprocessListener implements Listener{
         player.sendMessage(ChatColor.AQUA+"=== Schematics ===");
         for (File file : files)
         {
-            if (file.getName().toLowerCase().contains("schematic") && !file.isDirectory()) {
+            if (file.getName().toLowerCase().contains("schematic")) {
                player.sendMessage(ChatColor.BLUE.toString()+file.getName());
             }
         }
